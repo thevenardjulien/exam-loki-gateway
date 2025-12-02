@@ -12,12 +12,6 @@ const app = express();
 // Middleware pour analyser les requêtes JSON
 app.use(express.json());
 
-// Middleware pour gérer les erreurs
-app.use((err, req, res, next) => {
-  console.error('Erreur:', err);
-  res.status(500).json({ error: 'Erreur interne du serveur' });
-});
-
 // Route de santé pour vérifier que le gateway fonctionne
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', service: 'gateway' });
@@ -27,6 +21,12 @@ app.get('/health', (req, res) => {
 //app.use('/auth', authProxy);
 app.use('/notify', notifiProxy);
 app.use('/update-stock', stockProxy);
+
+// Middleware pour gérer les erreurs (doit être après toutes les routes)
+app.use((err, req, res, next) => {
+  console.error('Erreur:', err);
+  res.status(500).json({ error: 'Erreur interne du serveur' });
+});
 
 // Lancer le Gateway
 const PORT = process.env.GATEWAY_PORT || 8000;
